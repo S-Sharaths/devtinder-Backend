@@ -4,17 +4,26 @@ const express = require("express");
 // i
 const app = express();
 
-// app.use("/", (req, res) => {
-//   res.send("this is main !");
-// });
-
-// below function is know as request handler
-app.use("/test", (req, res) => {
-  res.send("Hello from the server !");
+app.use("/user", (req, res) => {
+  res.send("HAHAHA");
 });
 
-app.use("/hello", (req, res) => {
-  res.send("Hello hello hello hello !");
+// this wiil only handle GET call to /user
+app.get("/user", (req, res) => {
+  res.send({ firstName: "sharath", lastname: "s" });
+});
+
+app.post("/user", (req, res) => {
+  res.send("data sucessfuly saved to the database");
+});
+
+app.delete("/user", (req, res) => {
+  res.send("data sucessfuly delete from database");
+});
+
+// this will match all the HTTP method API calls to /test
+app.use("/test", (req, res) => {
+  res.send("Hello from the server !");
 });
 
 // we will have to listen to incoming request

@@ -4,9 +4,9 @@ const express = require("express");
 // i
 const app = express();
 
-app.use("/", (req, res) => {
-  res.send("this is main !");
-});
+// app.use("/", (req, res) => {
+//   res.send("this is main !");
+// });
 
 // below function is know as request handler
 app.use("/test", (req, res) => {

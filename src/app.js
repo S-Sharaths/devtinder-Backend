@@ -7,14 +7,26 @@ app.use(
 
   (req, res, next) => {
     console.log("handling the route user 2");
+    next();
     // res.send("reponse 1 !!");
+  },
 
+  (req, res, next) => {
+    console.log("handling the route user 2");
+    // res.send("reponse 2 !!");
     next();
   },
 
-  (req, res) => {
+  (req, res, next) => {
     console.log("handling the route user 2");
-    res.send("reponse 2 !!");
+    // res.send("reponse 2 !!");
+    next();
+  },
+
+  (req, res, next) => {
+    console.log("handling the route user 2");
+    // res.send("reponse 2 !!");
+    // next();
   }
 );
 

@@ -2,15 +2,25 @@ const express = require("express");
 
 const app = express();
 
-app.get("/user", (req, res, next) => {
-  console.log("handling the route user 2");
-  res.send("reponse 2 !!");
+app.use("/admin", (req, res, next) => {
+  console.log("admin auth is getting checked !!");
+
+  const token = "xyz";
+  const isAdminAuthorized = token === "xyz";
+
+  if (!isAdminAuthorized) {
+    res.status(401).send("unauthorized request");
+  } else {
+    next();
+  }
 });
 
-app.get("/user", (req, res, next) => {
-  console.log("handling the route user !!");
-  next();
-  // res.send("reponse 1 !!");
+app.get("/admin/getAllData", (req, res, next) => {
+  res.send("ALL data sent");
+});
+
+app.get("/admin/deleteUser", (req, res, next) => {
+  res.send("delete a user");
 });
 
 app.listen(1234, () => {

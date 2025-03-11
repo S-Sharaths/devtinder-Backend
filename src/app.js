@@ -1,19 +1,9 @@
 const express = require("express");
+const { adimAuth } = require("./middlewares/auth");
 
 const app = express();
 
-app.use("/admin", (req, res, next) => {
-  console.log("admin auth is getting checked !!");
-
-  const token = "xyz";
-  const isAdminAuthorized = token === "xyz";
-
-  if (!isAdminAuthorized) {
-    res.status(401).send("unauthorized request");
-  } else {
-    next();
-  }
-});
+app.use("/admin", adimAuth);
 
 app.get("/admin/getAllData", (req, res, next) => {
   res.send("ALL data sent");

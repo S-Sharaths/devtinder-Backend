@@ -3,21 +3,21 @@ const { adimAuth, userAuth } = require("./middlewares/auth");
 
 const app = express();
 
-app.use("/admin", adimAuth);
-
 app.get("/admin/getAllData", (req, res, next) => {
-  res.send("ALL data sent");
+  // logic of db call and get user data
+
+  try {
+    throw new error("dvbzjf");
+    res.send("user data sent");
+  } catch (err) {
+    res.status(500).send("something went wrong contact support team");
+  }
 });
 
-// for user auth we can define like below  or as per 16th line
-// app.use("/user", userAuth);
-
-app.get("/user", userAuth, (req, res, next) => {
-  res.send("user");
-});
-
-app.get("/admin/deleteUser", (req, res, next) => {
-  res.send("delete a user");
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("something went wrong");
+  }
 });
 
 app.listen(1234, () => {

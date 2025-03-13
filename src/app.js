@@ -72,6 +72,18 @@ app.get("/Oneuser", async (req, res) => {
   }
 });
 
+app.delete("/user", async (req, res) => {
+  const userID = req.body.userID;
+
+  //Get user By email
+  try {
+    const user = await User.findByIdAndDelete(userID);
+    res.send("user deleted sucessully");
+  } catch (err) {
+    res.status(400).send("something went wrong");
+  }
+});
+
 connectDB()
   .then(() => {
     console.log("Database connection was successful");

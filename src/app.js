@@ -99,6 +99,12 @@ app.patch("/user/:userId", async (req, res) => {
       // res.status(400).send(" update not allowed ");
       throw new Error("update not allowed");
     }
+
+    if(data?.skills>length >10){
+      throw new Error("error its more expexted length");
+    }
+
+
     const user = await User.findByIdAndUpdate({ _id: userID }, data, {
       returnDocument: "after",
       runValidators: true,

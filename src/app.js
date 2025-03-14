@@ -2,14 +2,36 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
+const { validateSignUpData } = require("./utils/validation");
+const bcrypt = require("bcrypt");
+const validator = require("validator");
 
 app.use(express.json());
 
 app.post("/signUp", async (req, res) => {
-  console.log(req.body);
-  const user = new User(req.body);
-
   try {
+    // validation
+    validateSignUpData(req);
+
+    // encryption
+
+    const { firstName, lastName, emailID, password } = req.body;
+    // first argument if password and second agument is salt round (if its more it very tough to  break )
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log(passwordHash);
+
+    // itnot good way of creating a instace of model we need to explcity define
+    // const user = new User({ });
+
+    const user = new User({
+      firstName,
+      lastName,
+      emailID,
+      password: passwordHash,
+    });
+
+    //
+
     await user.save();
     res.send("user added sucessfully");
   } catch (err) {
@@ -17,8 +39,36 @@ app.post("/signUp", async (req, res) => {
   }
 });
 
-// get user by email
+//login
 
+app.post("/Login", async (req, res) => {
+  try {
+    const { emailID, password } = req.body;
+    if (!validator.isEmail(emailID)) {
+      throw new Error("in valid email id");
+    }
+    const user = await User.findOne({ emailID: emailID });
+
+    if (!user) {
+      throw new Error("EmailID id not present in DB");
+    }
+    // first we will check there email id is available or not
+    // next we wil bring crossponding password from db and compare it with password db
+
+    const isStrongPassword = await bcrypt.compare(password, user.password);
+    console.log(isStrongPassword);
+
+    if (isStrongPassword) {
+      res.send("Login Sucessfull");
+    } else {
+      throw new Error("login failed please check password and email id ");
+    }
+  } catch (err) {
+    res.status(400).send("error :" + err.message);
+  }
+});
+
+// get user by email
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailID;
 
@@ -100,10 +150,9 @@ app.patch("/user/:userId", async (req, res) => {
       throw new Error("update not allowed");
     }
 
-    if(data?.skills>length >10){
+    if (data?.skills > length > 10) {
       throw new Error("error its more expexted length");
     }
-
 
     const user = await User.findByIdAndUpdate({ _id: userID }, data, {
       returnDocument: "after",

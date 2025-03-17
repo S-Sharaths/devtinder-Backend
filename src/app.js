@@ -5,8 +5,11 @@ const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signUp", async (req, res) => {
   try {
@@ -59,10 +62,42 @@ app.post("/Login", async (req, res) => {
     console.log(isStrongPassword);
 
     if (isStrongPassword) {
+      // first argument is the data we are going to hide
+      // second argument is  secert key
+      const token = await jwt.sign({ _id: user._id }, "van@009$");
+
+      res.cookie("token", token);
       res.send("Login Sucessfull");
     } else {
       throw new Error("login failed please check password and email id ");
     }
+  } catch (err) {
+    res.status(400).send("error :" + err.message);
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  // this wil give all the cookies
+  try {
+    const cookies = req.cookies;
+
+    const { token } = cookies;
+
+    if (!token) {
+      throw new Error("Invalid token");
+    }
+
+    const decodedMessage = await jwt.verify(token, "van@009$");
+
+    const { _id } = decodedMessage;
+
+    const user = await User.findById(_id);
+
+    if (!user) {
+      throw new Error("user not found");
+    }
+
+    res.send(user);
   } catch (err) {
     res.status(400).send("error :" + err.message);
   }

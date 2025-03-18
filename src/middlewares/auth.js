@@ -1,30 +1,34 @@
-const adimAuth = (req, res, next) => {
-  console.log("admin auth is getting checked !!");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-  const token = "xyz";
-  const isAdminAuthorized = token === "xyz";
+const userAuth = async (req, res, next) => {
+  try {
+    const { token } = req.cookies;
 
-  if (!isAdminAuthorized) {
-    res.status(401).send("unauthorized request");
-  } else {
+    if (!token) {
+      throw new Error("token is not valid");
+    }
+
+    const decodedObject = await jwt.verify(token, "van@009$");
+
+    const { _id } = decodedObject;
+
+    // const user = await User;
+
+    const user = await User.findById(_id);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    req.user = user;
+
     next();
-  }
-};
-
-const userAuth = (req, res, next) => {
-  console.log("user auth is getting checked !!");
-
-  const token = "xyz";
-  const isAdminAuthorized = token === "xyz";
-
-  if (!isAdminAuthorized) {
-    res.status(401).send("unauthorized request");
-  } else {
-    next();
+  } catch (err) {
+    res.status(400).send("error :" + err.message);
   }
 };
 
 module.exports = {
-  adimAuth,
   userAuth,
 };

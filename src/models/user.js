@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 var validator = require("validator");
-
-const userSchema = mongoose.Schema(
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -65,6 +66,28 @@ const userSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.methods.getJWt = async function (params) {
+  // becuase all the user are instance of user \
+  // note this function will not work in arrow function
+  const user = this;
+
+  const token = await jwt.sign({ _id: user._id }, "van@009$", {
+    expiresIn: "0d",
+  });
+
+  return token;
+};
+
+userSchema.methods.validatePassword = async function (passwordByUser) {
+  // this refering to that user
+  const user = this;
+  const hashPassword = user.password;
+
+  const isStrongPassword = bcrypt.compare(passwordByUser, hashPassword);
+
+  return isStrongPassword;
+};
 
 const userModel = mongoose.model("User", userSchema);
 

@@ -14,6 +14,28 @@ const validateSignUpData = (req) => {
   }
 };
 
+const validateEditProfileData = (req) => {
+  // first of all we will check allowed feild  for ediing
+  const allowedEditFileds = [
+    "firstname",
+    "lastname",
+    "emailid",
+    "photoUrl",
+    "gender",
+    "age",
+    "skills",
+  ];
+
+  //every feild from req we will check weather is there in allowedEditFileds if not we will not allow to edit
+
+  const iseditallowedobject = Object.keys(req.body).every((field) =>
+    allowedEditFileds.includes(field)
+  );
+
+  return iseditallowedobject;
+};
+
 module.exports = {
   validateSignUpData,
+  validateEditProfileData,
 };

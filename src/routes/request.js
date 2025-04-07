@@ -2,6 +2,7 @@ const express = require("express");
 const requestRouter = express.Router();
 const { userAuth } = require("../middlewares/auth");
 const connectionRequests = require("../models/connectionRequest");
+const User = require("../models/user");
 
 requestRouter.post(
   "/request/send/:status/:toUserId",
@@ -15,6 +16,14 @@ requestRouter.post(
       const status = req.params.status;
 
       const allowedStatus = ["ignore", "instersted"];
+
+      const toUser = await User.findById(toUserId);
+
+      if (!toUser) {
+        return res.status(400).send({
+          message: "User Not present",
+        });
+      }
 
       // console.log(!allowedStatus.includes(status));
 
@@ -30,8 +39,6 @@ requestRouter.post(
           { fromUserId: toUserId, toUserId: fromUserId },
         ],
       });
-
-      console.log(existingConnectionRequest + "ddddddd");
 
       if (existingConnectionRequest) {
         return res.status(400).send({
